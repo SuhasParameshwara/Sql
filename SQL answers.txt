@@ -1,0 +1,221 @@
+
+			Lab 1: Learning to explore a Database Table in SQL Server Management Studio
+
+1. The employee table belongs to human resource schema.
+
+2. The primary key for the employee table is Employee ID.
+
+3. Yes. There are two foreign keys. The first key is Contact ID referring from Contact table and the second key is Manager ID referring from     the Employee table.
+
+4. The employee table consist of the field manager id which may be null.
+
+5. The valid entries in the marital status column are S or M.
+
+6. The fields that hold variable length data are
+	
+	NationalIdNumber
+    	LoginID
+    	Title
+     	MaritalStatus
+     	Gender
+
+7. The default value for the salaried flag is 1. It means that salaried, exempt from collective bargaining.
+
+					Lab1 - Challenge
+
+1. Therer is no uEmployee trigger in the following table.			
+
+					Lab2 - Challenge
+
+ 	SELECT Production.Product.Name,
+ 	Purchasing.Vendor.Name AS EXPR1, 
+	Person.Address.City
+	FROM Purchasing.Vendor 
+	CROSS JOIN Person.Address 
+                 CROSS JOIN Production.Product
+
+Lab 3: The Languages of SQL
+
+Command                                                                                 
+Select (DML)		                           
+Alter (DDL)					      
+Grant(DCL)							  
+Update(DDL)				                      
+Deny(DCL)							   
+Create(DCL)							   
+Drop(DCL)							  
+Delete(DDL)				   	     
+Insert (DDL)					      
+
+
+					Lab4 - The Select Command
+
+1) SELECT * FROM AdventureWorks.HumanResources.Employee;
+
+2) SELECT LoginID, 
+    Title,
+    VacationHours
+    FROM HumanResources.Employee
+
+3) SELECT HumanResources.Employee.MaritalStatus,
+    Person.Contact.FirstName
+    FROM HumanResources.Employee  INNERJOIN Person.Contact
+    ON HumanResources.Employee.ContactID = Person.Contact.ContactID
+    WHERE HumanResources.Employee.MaritalStatus='S';
+
+4) SELECT HumanResources.Employee.MaritalStatus,
+    Person.Contact.FirstName
+    FROM HumanResources.Employee INNERJOIN Person.Contact 
+    ON HumanResources.Employee.ContactID = Person.Contact.ContactID
+    WHERE HumanResources.Employee.MaritalStatus='M';
+
+5) SELECT * FROMHumanResources.Employee
+    Orderby HireDate;
+
+				Lab 4 - Challenge
+
+SELECT EmployeeID
+FROM HumanResources.Employee
+WHERE HumanResources.Employee.ManagerID = null
+ORDER BY HumanResources.Employee.Title ,HumanResources.Employee.BirthDate
+
+				Lab 5 - The Select Command Comparison Operators
+1) SELECT Name, 
+    Color  
+    FROM Production.Product
+    WHERE Color='Black';
+
+2) SELECT SafetyStockLevel     
+    FROM Production.Product 
+    WHERE SafetyStockLevel<100
+
+3) SELECT ProductNumber
+    FROM Production.Product 
+    WHERE ProductNumber like 'BK%'
+
+4) SELECT Name
+    FROM Production.Product 
+    WHERE Name like '%Lock%'
+
+5) SELECT Name, 
+    Color, 
+    Size
+    FROM Production.Product
+    WHERE Size not in('L','M','null')
+             
+						Lab 5 - Challenge
+
+SELECT Name,
+ListPrice,
+DaysToManufacture,
+ProductID
+FROM Production.Product 
+WHERE DaysToManufacture BETWEEN 3 AND 6 
+ORDERBY ListPrice DESC
+
+				Lab 6 - The Select Command Expanded Filtering
+
+1) SELECT Sales.SalesPerson.Bonus,
+    Person.Contact.FirstName,
+    Person.Contact.LastName
+    FROM Sales.SalesPerson CROSSJOIN Person.Contact
+    WHERE  (Sales.SalesPerson.Bonus BETWEEN 1000.00 AND 5000.00)
+    ORDERBYSales.SalesPerson.Bonus
+
+2) SELECT  TerritoryID,
+    SalesPersonID
+    FROM Sales.SalesPerson 
+    WHERE  TerritoryID IN(1,2,4)
+
+3) SELECT  TOP   10 *
+    FROM Sales.SalesPerson
+
+4) SELECT  Sales.SalesPerson.*
+    FROM Sales.SalesPerson
+    WHERE   SalesYTD > SalesLastYear;
+
+5) SELECT TerritoryID,
+    SalesPersonID
+    FROM Sales.SalesPerson 
+    WHERE  TerritoryID = NULL 
+    ORDERBY SalesPersonID DESC
+
+					Lab 6 - Challenge
+
+SELECT TOP 25 PERCENT *
+FROM Sales.SalesPerson
+WHERE SalesLastYear != 0
+
+				           Lab 7 - The SQL Functions
+
+1) SELECT AVG(CommissionPct) 
+    FROM Sales.SalesPerson
+	
+2) SELECT COUNT(Gender)
+    FROM HumanResources.Employee
+    WHERE Gender='M'
+
+3) SELECT MAX(ListPrice)
+    FROM Production.Product
+
+4) SELECT LEN(Description)
+    FROM Production.ProductDescription
+
+5) SELECT CurrencyCode,
+    Name
+    FROM Sales.Currency
+    WHERE Name LIKE 'AB%'
+
+						Lab 7 - Challenge
+
+SELECT DATEDIFF(DAY,SellEndDate,SellStartDate)
+FROM Production.Product 
+WHERE SellEndDate is NOT NULL
+
+					Lab 8 - The Aggregation and Grouping
+
+1) SELECT Title,MIN(LoginID) as Lowest_Login_Id
+    FROM HumanResources.Employee
+    WHERE Title = 'Buyer' or Title = 'Recruiter' 
+    OR Title =  'Stocker'
+    GROUP BY  Title
+
+2) SELECT ProductSubcategoryID,Name, MAX(ListPrice)
+    FROM Production.Product
+    GROUP BY ProductSubcategoryID 
+    HAVING COUNT (ProductSubcategoryID) > 20
+    ORDER BY Name
+
+						Lab 8 - Challenge
+
+SELECT COUNT(EmployeeID) as Number_Of_Employees
+FROM HumanResources.Employee
+GROUP BY  ManagerID
+
+					Lab 9: The Multi-Table Queries
+
+1) SELECT Purchasing.Vendor.Name,
+    Purchasing.PurchaseOrderHeader.SubTotal
+    FROM Purchasing.Vendor 
+    INNER JOIN Purchasing.PurchaseOrderHeader 
+    ON Purchasing.Vendor.VendorID = Purchasing.PurchaseOrderHeader.VendorID
+    ORDER BY   Purchasing.Vendor.Name
+
+2) SELECT Production.Product.ProductSubcategoryID,
+    Sales.SalesOrderDetail.ProductID,
+    Production.Product.Name
+    FROM Production.Product LEFT OUTER JOIN
+    Sales.SalesOrderDetail 
+    ON Production.Product.ProductID = Sales.SalesOrderDetail.ProductID
+
+
+						Lab 9 - Challenge
+
+SELECT Person.Contact.FirstName+''+
+Person.Contact.MiddleName+''+
+Person.Contact.LastName as Manager_Name
+FROM HumanResources.Employee 
+INNER JOIN Person.Contact 
+ON HumanResources.Employee.ContactID = Person.Contact.ContactID
+WHERE HumanResources.Employee.ManagerID IS NOT NULL
+
